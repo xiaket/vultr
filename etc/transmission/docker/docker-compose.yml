@@ -1,0 +1,14 @@
+transmission:
+  image: rlesouef/alpine-transmission
+  container_name: transmission
+  env_file:
+     - .env_admin
+  ports:
+    - "57136:9091"
+    - "51413:51413/tcp"
+    - "51413:51413/udp"
+  volumes:
+    - /etc/localtime:/etc/localtime:ro
+    - /etc/timezone:/etc/timezone:ro
+    - /data/var/lib/transmission/downloads:/transmission/downloads
+    - /data/var/lib/transmission/incomplete:/transmission/incomplete
