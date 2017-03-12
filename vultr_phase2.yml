@@ -1,0 +1,99 @@
+---
+# run this as: `ansible-playbook -i 45.32.92.26, vultr_phase2.yml --user xiaket`
+- name: configure everything for personal vultr server.
+  hosts: 45.32.92.26
+  vars:
+    base_packages:
+      - apt-transport-https
+      - ca-certificates
+      - curl
+      - python-setuptools
+      - python-software-properties
+    pip_packages:
+      - docker-compose
+      - setuptools
+
+  tasks:
+  - name: install base packages
+    apt:
+      name: "{{ item }}"
+      state: present
+      install_recommends: no
+      update_cache: yes
+    become: true
+    with_items: "{{ base_packages }}"
+
+  - name: add docker apt key
+    apt_key:
+      url: https://download.docker.com/linux/debian/gpg
+      state: present
+    become: true
+
+  - name: add docker repository
+    apt_repository:
+      repo: deb [arch=amd64] https://download.docker.com/linux/debian jessie stable
+      state: present
+    become: true
+
+  - name: install docker
+    apt:
+      name: docker-ce
+      state: present
+      install_recommends: no
+      update_cache: yes
+    become: true
+
+  - name: add user into docker group
+    user:
+      name: xiaket
+      groups: docker
+      append: yes
+    become: true
+
+  - name: upgrade pip
+    easy_install:
+      name: pip
+      state: latest
+    become: true
+
+  - name: install required pip packages
+    pip:
+      name: "{{ item }}"
+      state: latest
+    with_items: "{{ pip_packages }}"
+    become: true
+
+  - name: create docker directory
+    file:
+      path: /data/var/lib/docker
+      state: directory
+    become: true
+    register: data_docker
+
+  - name: stop docker service
+    service:
+      name: docker
+      state: stopped
+    become: true
+    when: data_docker.changed
+
+  - name: move things in /var/lib/docker to /data/var/lib/docker
+    shell: mv /var/lib/docker/* /data/var/lib/docker
+    become: true
+    when: data_docker.changed
+
+  - name: make a symlink between these two dirs.
+    file:
+      src: /data/var/lib/docker
+      dest: /var/lib/docker
+      state: link
+      force: true
+    become: true
+    when: data_docker.changed
+
+  - name: start docker service again
+    service:
+      name: docker
+      state: started
+    become: true
+    when: data_docker.changed
