@@ -1,0 +1,10 @@
+nginx:
+  image: nginx:1.11.10-alpine
+  container_name: nginx
+  ports:
+    - "80:80"
+  volumes:
+    - /etc/localtime:/etc/localtime:ro
+    - /etc/timezone:/etc/timezone:ro
+    - /data/shipyard/static:/usr/share/nginx/html:ro
+  restart: always
