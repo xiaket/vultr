@@ -7,8 +7,11 @@
       - apt-transport-https
       - ca-certificates
       - curl
+      - iftop
       - python-setuptools
       - python-software-properties
+      - rsync
+      - strace
     pip_packages:
       - docker-compose
       - setuptools
