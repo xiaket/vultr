@@ -7,7 +7,11 @@ Requires=docker.service
 WorkingDirectory=/data/etc/transmission/docker
 Restart=always
 TimeoutStartSec=0
-ExecStartPre=/usr/bin/env docker-compose pull
+Environment=COMPOSE_HTTP_TIMEOUT=200
 ExecStart=/usr/bin/env docker-compose up --force-recreate
 ExecStop=/usr/bin/env docker-compose stop
 ExecStopPost=/usr/bin/env docker-compose down
+
+[Install]
+WantedBy=multi-user.target
+Alias=blog.service

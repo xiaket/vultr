@@ -1,14 +1,13 @@
 transmission:
-  image: rlesouef/alpine-transmission
+  image: xiaket/transmission:alpine-latest
   container_name: transmission
   env_file:
      - .env_admin
   ports:
-    - "57136:9091"
+    - "0.0.0.0:57136:9091"
     - "51413:51413/tcp"
     - "51413:51413/udp"
   volumes:
-    - /etc/localtime:/etc/localtime:ro
-    - /etc/timezone:/etc/timezone:ro
     - /data/var/lib/transmission/downloads:/transmission/downloads
     - /data/var/lib/transmission/incomplete:/transmission/incomplete
+    - /data/var/lib/transmission/config:/etc/transmission-daemon
