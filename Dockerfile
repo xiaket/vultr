@@ -1,4 +1,4 @@
-FROM alpine:latest
+FROM nginx:1.11.10-alpine
 
 MAINTAINER Kai Xia(xiaket@gmail.com)
 
@@ -13,7 +13,7 @@ VOLUME ["/transmission/downloads"]
 VOLUME ["/transmission/incomplete"]
 VOLUME ["/etc/transmission-daemon"]
 
-EXPOSE 9091 51413/tcp 51413/udp
+EXPOSE 51413/tcp 51413/udp
 
 ENV USERNAME admin
 ENV PASSWORD password

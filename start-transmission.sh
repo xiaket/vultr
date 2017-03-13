@@ -20,4 +20,5 @@ fi
 
 unset PASSWORD USERNAME
 
+nginx
 exec /usr/bin/transmission-daemon --foreground --config-dir /etc/transmission-daemon
