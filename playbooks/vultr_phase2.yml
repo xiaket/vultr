@@ -13,6 +13,7 @@
       - python-software-properties
       - rsync
       - strace
+      - ufw
     pip_packages:
       - docker-compose
       - setuptools
