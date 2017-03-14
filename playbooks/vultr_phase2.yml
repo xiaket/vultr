@@ -15,6 +15,7 @@
       - strace
       - ufw
     pip_packages:
+      - feedparser
       - docker-compose
       - setuptools
 
@@ -102,3 +103,35 @@
       state: started
     become: true
     when: data_docker.changed
+
+  - name: Configure ufw defaults
+    ufw: direction={{ item.direction }} policy={{ item.policy }}
+    with_items:
+      - { direction: 'incoming', policy: 'deny' }
+      - { direction: 'outgoing', policy: 'allow' }
+    become: true
+
+  - name: Configure ufw rules
+    ufw: rule={{ item.rule }} port={{ item.port }} proto={{ item.proto }}
+    with_items:
+      - { rule: 'limit', port: '22', proto: 'tcp' }
+      - { rule: 'allow', port: '80', proto: 'tcp' }
+      - { rule: 'allow', port: '443', proto: 'tcp' }
+      - { rule: 'allow', port: '8443', proto: 'tcp' }
+      - { rule: 'allow', port: '51413', proto: 'tcp' }
+      - { rule: 'allow', port: '51413', proto: 'udp' }
+    become: true
+
+  - name: Enable ufw logging
+    ufw: logging=on
+    become: true
+
+  - name: Enable ufw
+    ufw: state=enabled
+    become: true
+
+  - name: restart ufw 
+    service:
+      name: ufw
+      state: restarted
+    become: true
