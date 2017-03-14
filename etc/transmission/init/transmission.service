@@ -14,4 +14,4 @@ ExecStopPost=/usr/bin/env docker-compose down
 
 [Install]
 WantedBy=multi-user.target
-Alias=blog.service
+Alias=transmission.service
