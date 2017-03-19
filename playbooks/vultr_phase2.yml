@@ -4,6 +4,7 @@
   hosts: 45.32.92.26
   vars:
     base_packages:
+      - apache2-utils
       - apt-transport-https
       - ca-certificates
       - curl
