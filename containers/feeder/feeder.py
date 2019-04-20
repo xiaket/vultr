@@ -12,6 +12,8 @@ import requests
 CONF = "/var/feeder/config.json"
 DEST = "/var/torrents"
 
+logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.DEBUG)
+
 
 def get_conf():
     if not os.path.isdir(os.path.dirname(CONF)):
@@ -34,19 +36,22 @@ def save_conf(conf):
 def add(link):
     logging.info("Adding link: %s", link)
     conf = get_conf()
-    conf[link] = ""
+    conf[link] = []
     save_conf(conf)
 
 
 def run():
     conf = get_conf()
-    for src, last_hash in conf.items():
+    for src, known_hashes in conf.items():
+        logging.info("Parsing: %s", src)
         items = feedparser.parse(src)
+        logging.info("Found %s entries in %s", len(items["entries"]), src)
         if len(items["entries"]) == 0:
             return
         for entry in items["entries"]:
-            if entry["id"] == last_hash:
-                break
+            logging.info("Parsing entry: %s", entry)
+            if entry["id"] in known_hashes:
+                continue
             logging.info("Adding torrent from: %s", entry)
             for link in entry["links"]:
                 if "torrent" not in link["type"]:
@@ -56,7 +61,7 @@ def run():
                 with open(f'{DEST}/{entry["id"]}.torrent', "wb") as fobj:
                     fobj.write(response.content)
                     logging.info("Downloaded torrent: %s", entry["id"])
-        conf[src] = items["entries"][0]["id"]
+            conf[src] = list(set(conf[src] + [entry["id"]]))
         save_conf(conf)
 
 
