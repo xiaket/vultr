@@ -1,0 +1,85 @@
+
+---
+- name: create cache_install_dir
+  file:
+    state: directory
+    path: "{{ install_cache_dir }}"
+  become: yes
+
+- name: set timezone
+  timezone:
+    name: "{{ timezone }}"
+  become: yes
+
+- name: Upgrade Packages
+  apt:
+    update_cache: yes
+    upgrade: yes
+  become: yes
+  register: package_updates
+
+- name: reboot
+  shell: "sleep 3 && reboot"
+  when: package_updates.changed and reboot
+  async: 1
+  poll: 0
+  become: yes
+
+- name: Wait for the reboot to complete
+  wait_for_connection:
+    connect_timeout: 20
+    sleep: 2
+    delay: 5
+    timeout: 300
+  when: package_updates.changed
+
+- name: install packages
+  apt:
+    name: "{{ apt_packages }}"
+    state: present
+    install_recommends: no
+  become: yes
+
+- name: upgrade pip
+  easy_install:
+    name: pip
+    state: latest
+  become: true
+
+- name: install required pip packages
+  pip:
+    name: '{{ pip_packages }}'
+    state: latest
+  become: true
+
+- name: Configure ufw defaults
+  ufw: direction={{ item.direction }} policy={{ item.policy }}
+  with_items:
+    - { direction: 'incoming', policy: 'deny' }
+    - { direction: 'outgoing', policy: 'allow' }
+  become: true
+
+- name: Configure ufw rules
+  ufw: rule={{ item.rule }} port={{ item.port }} proto={{ item.proto }}
+  with_items:
+    - { rule: 'limit', port: '22', proto: 'tcp' }
+    - { rule: 'allow', port: '80', proto: 'tcp' }
+    - { rule: 'allow', port: '443', proto: 'tcp' }
+    - { rule: 'allow', port: '8443', proto: 'tcp' }
+    - { rule: 'allow', port: '51413', proto: 'tcp' }
+    - { rule: 'allow', port: '51413', proto: 'udp' }
+  become: true
+
+- name: Enable ufw logging
+  ufw: logging=on
+  become: true
+
+- name: Enable ufw
+  ufw: state=enabled
+  become: true
+
+- name: restart ufw
+  service:
+    name: ufw
+    state: restarted
+  become: true

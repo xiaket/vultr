@@ -1,0 +1,16 @@
+{
+  "dht-enabled": false,
+  "download-dir": "/transmission/downloads",
+  "incomplete-dir-enabled": true,
+  "incomplete-dir": "/transmission/incomplete",
+  "watch-dir-enabled": true,
+  "watch-dir": "/transmission/watch",
+  "rpc-host-whitelist": "172.16.238.*",
+  "rpc-whitelist": "172.16.238.*",
+  "peer-limit-global": 500,
+  "peer-limit-per-torrent": 100,
+  "preallocation": 2,
+  "rpc-authentication-required": true,
+  "rpc-username": "{{ RPC_USER }}",
+  "rpc-password": "{{ RPC_PASS }}"
+}

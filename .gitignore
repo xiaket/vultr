@@ -1,1 +1,2 @@
-etc/transmission/docker/.env_admin
+.env
+*.retry

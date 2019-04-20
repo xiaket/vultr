@@ -1,0 +1,45 @@
+version: '3'
+
+services:
+  nginx:
+    image: nginx:alpine
+    container_name: nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    networks:
+      - oppenheimer
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+      - ./torrent.xiaket.org.conf:/etc/nginx/conf.d/site_torrent.xiaket.org.conf:ro
+      - /var/ssl/torrent.xiaket.org/key:/etc/nginx/ssl/torrent.xiaket.org.key:ro
+      - /var/ssl/torrent.xiaket.org/fullchain:/etc/nginx/ssl/torrent.xiaket.org.cer:ro
+    restart: always
+
+  transmission:
+    build:
+      context: .
+    container_name: transmission
+    ports:
+      - "51413:51413/tcp"
+      - "51413:51413/udp"
+    networks:
+      - oppenheimer
+    environment:
+      - TRANSMISSION_WEB_HOME=/tmc/
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+      - /transmission/downloads:/transmission/downloads
+      - /transmission/watch:/transmission/watch
+      - /transmission/incomplete:/transmission/incomplete
+      - /var/oppenheimer:/var/transmission-daemon
+    restart: always
+
+networks:
+  oppenheimer:
+    ipam:
+      driver: default
+      config:
+        - subnet: "172.16.238.0/24"

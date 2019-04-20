@@ -1,0 +1,41 @@
+---
+- name: Storage VPS configuration
+  vars:
+    apt_packages:
+      - apt-transport-https
+      - aptitude
+      - ca-certificates
+      - python-setuptools
+      - python3
+      - rsync
+      - sysstat
+      - ufw
+      - vim
+    containers:
+      - acmesh
+      - feeder
+      - oppenheimer
+    domain_names:
+      - d.xiaket.org
+      - torrent.xiaket.org
+    install_cache_dir: /opt/install
+    pip_packages:
+      - docker
+      - docker-compose
+      - pip
+    reboot: false
+    timezone: Australia/Melbourne
+  hosts: all
+  user: xiaket
+
+  pre_tasks:
+    - name: Load environment variables
+      set_fact:
+        RPC_PASS: '{{ lookup("env", "RPC_PASS") or "" }}'
+        RPC_USER: '{{ lookup("env", "RPC_USER") or "" }}'
+        Namesilo_Key: '{{ lookup("env", "Namesilo_Key") or "" }}'
+
+  tasks:
+    - import_tasks: tasks/os.yml
+    - import_tasks: tasks/docker.yml
+    - import_tasks: tasks/services.yml
