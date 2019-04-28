@@ -22,7 +22,6 @@
     pip_packages:
       - docker
       - docker-compose
-      - pip
     reboot: false
     timezone: Australia/Melbourne
   hosts: all
