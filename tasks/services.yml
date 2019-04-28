@@ -78,6 +78,14 @@
     state: started
   become: true
 
+- name: Auto restart Oppenheimer service
+  cron:
+    name: "Auto restart Oppenheimer service."
+    minute: "15"
+    hour: "3"
+    job: "service docker-compose@oppenheimer restart"
+  become: yes
+
 - name: build feeder
   docker_image:
     path: "/etc/docker/compose/feeder/"
@@ -94,6 +102,6 @@
 - name: enable feeder through cron
   cron:
     name: "Get torrent from RSS feeds."
-    minute: "*/6"
+    minute: "*/5"
     job: "docker run -v /var/feeder:/var/feeder -v /transmission/watch:/var/torrents xiaket/feeder cron"
   become: yes
