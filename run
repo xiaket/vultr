@@ -11,3 +11,4 @@ fi
 rm -f entrypoint.retry
 export ANSIBLE_SSH_PIPELINING=1
 exec ansible-playbook -i "$1", -vv entrypoint.yml || rm -f entrypoint.retry
+#exec ansible-playbook --check -i "$1", -vv entrypoint.yml || rm -f entrypoint.retry
