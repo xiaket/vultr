@@ -5,19 +5,15 @@
       - apt-transport-https
       - aptitude
       - ca-certificates
-      - python-setuptools
+      - bind9-dnsutils
       - python3
+      - python3-pip
       - rsync
       - sysstat
       - ufw
-      - vim
+      - neovim
     containers:
-      - acmesh
-      - feeder
       - oppenheimer
-    domain_names:
-      - d.xiaket.org
-      - torrent.xiaket.org
     install_cache_dir: /opt/install
     pip_packages:
       - docker
@@ -32,7 +28,6 @@
       set_fact:
         RPC_PASS: '{{ lookup("env", "RPC_PASS") or "" }}'
         RPC_USER: '{{ lookup("env", "RPC_USER") or "" }}'
-        Namesilo_Key: '{{ lookup("env", "Namesilo_Key") or "" }}'
 
   tasks:
     - import_tasks: tasks/os.yml

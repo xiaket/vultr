@@ -1,7 +1,7 @@
 ---
 # run this as: `ansible-playbook -i 45.32.92.26, init.yml --user root --ask-pass -vvv`
 - name: configure everything for personal vultr server.
-  hosts: 45.32.92.26
+  hosts: 173.249.201.20
 
   tasks:
   - name: create user group

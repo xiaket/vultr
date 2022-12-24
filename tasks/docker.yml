@@ -38,7 +38,7 @@
   become: yes
 
 - name: upload build context for containers
-  synchronize:
+  ansible.posix.synchronize:
     src: "../containers/{{ item }}/"
     dest: "/etc/docker/compose/{{ item }}/"
   become: true

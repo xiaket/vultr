@@ -1,61 +1,4 @@
 # Service level configurations.
-- name: create acme data dir
-  file:
-    path: /var/acme
-    state: directory
-  become: true
-
-- name: create cert dir
-  file:
-    path: "/var/ssl/{{ item }}"
-    state: directory
-  become: true
-  with_items: "{{ domain_names }}"
-
-- name: enable acmesh service
-  systemd:
-    name: "docker-compose@acmesh"
-    enabled: true
-    state: started
-  become: true
-
-- name: check existing certificate
-  stat:
-    path: "/var/ssl/{{ domain_names | first }}/key"
-  register: ssl_cert
-  become: true
-
-- name: Create certs
-  docker_container:
-    name: "acme-cert-{{ item }}"
-    image: acmesh_acme
-    command: "acme.sh --keylength 4096 --issue --dns dns_namesilo --dnssleep 950 -d {{ item }}"
-    env:
-      Namesilo_Key: "{{ Namesilo_Key }}"
-    volumes:
-      /var/acme:/acme.sh
-  with_items: "{{ domain_names }}"
-  become: true
-  when: not ssl_cert.stat.exists
-
-- name: sleep for 960 seconds and continue with play
-  wait_for:
-    timeout: 960
-  delegate_to: localhost
-  when: not ssl_cert.stat.exists
-
-- name: Install certs
-  docker_container:
-    name: "acme-install-cert-{{ item }}"
-    image: acmesh_acme
-    command: "acme.sh --installcert -d {{ item }} --key-file /var/ssl/{{ item }}/key --fullchain-file /var/ssl/{{ item }}/fullchain"
-    volumes:
-      - /var/acme/:/acme.sh/
-      - /var/ssl/:/var/ssl/
-  with_items: "{{ domain_names }}"
-  become: true
-  when: not ssl_cert.stat.exists
-
 - name: create oppenheimer config dir
   file:
     path: /var/oppenheimer
@@ -84,24 +27,4 @@
     minute: "15"
     hour: "3"
     job: "service docker-compose@oppenheimer restart"
-  become: yes
-
-- name: build feeder
-  docker_image:
-    path: "/etc/docker/compose/feeder/"
-    name: "xiaket/feeder"
-    tag: latest
-  become: true
-
-- name: create feeder data dir
-  file:
-    path: /var/feeder
-    state: directory
-  become: true
-
-- name: enable feeder through cron
-  cron:
-    name: "Get torrent from RSS feeds."
-    minute: "*/5"
-    job: "docker run -v /var/feeder:/var/feeder -v /transmission/watch:/var/torrents xiaket/feeder cron"
   become: yes

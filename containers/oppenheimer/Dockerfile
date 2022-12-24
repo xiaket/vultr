@@ -1,6 +1,6 @@
 FROM alpine:latest
 
-MAINTAINER Kai Xia(xiaket@gmail.com)
+MAINTAINER Kai Xia(kaix@fastmail.com)
 
 RUN apk add --update \
     transmission-daemon wget \

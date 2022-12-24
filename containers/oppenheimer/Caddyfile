@@ -1,0 +1,4 @@
+pt.xiaket.org
+
+reverse_proxy transmission:9091 {
+}

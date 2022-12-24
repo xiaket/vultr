@@ -7,7 +7,7 @@
   become: yes
 
 - name: set timezone
-  timezone:
+  community.general.timezone:
     name: "{{ timezone }}"
   become: yes
 
@@ -40,12 +40,6 @@
     install_recommends: no
   become: yes
 
-- name: upgrade pip
-  easy_install:
-    name: pip
-    state: latest
-  become: true
-
 - name: install required pip packages
   pip:
     name: '{{ pip_packages }}'
@@ -53,14 +47,14 @@
   become: true
 
 - name: Configure ufw defaults
-  ufw: direction={{ item.direction }} policy={{ item.policy }}
+  community.general.ufw: direction={{ item.direction }} policy={{ item.policy }}
   with_items:
     - { direction: 'incoming', policy: 'deny' }
     - { direction: 'outgoing', policy: 'allow' }
   become: true
 
 - name: Configure ufw rules
-  ufw: rule={{ item.rule }} port={{ item.port }} proto={{ item.proto }}
+  community.general.ufw: rule={{ item.rule }} port={{ item.port }} proto={{ item.proto }}
   with_items:
     - { rule: 'limit', port: '22', proto: 'tcp' }
     - { rule: 'allow', port: '80', proto: 'tcp' }
@@ -71,11 +65,11 @@
   become: true
 
 - name: Enable ufw logging
-  ufw: logging=on
+  community.general.ufw: logging=on
   become: true
 
 - name: Enable ufw
-  ufw: state=enabled
+  community.general.ufw: state=enabled
   become: true
 
 - name: restart ufw
